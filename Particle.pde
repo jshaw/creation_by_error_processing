@@ -24,12 +24,11 @@ class Particle {
   }
   
   void display(){
-    stroke(0, lifespan);
+    stroke(255, lifespan);
     strokeWeight(2);
-    fill(127,lifespan);
+    fill(255,lifespan);
     pushMatrix();
       translate(location.x, location.y, location.z);
-      sphereDetail(6);
       sphere(1);
     popMatrix();
   }

@@ -1,9 +1,12 @@
+import codeanticode.syphon.*;
+
 import com.pubnub.api.*;
 import processing.serial.*;
 import peasy.*;
 
 PeasyCam cam;
 ParticleSystem ps;
+SyphonServer server;
 
 PFont    axisLabelFont;
 PVector  axisXHud;
@@ -25,14 +28,18 @@ float camRotateSpeed = 0.5;
 Pubnub pubnub = new Pubnub("pub-c-70a0789e-af5a-4f4f-8c1b-8e6eb6db7bf2", "sub-c-6bac1e5a-e5c4-11e6-a504-02ee2ddab7fe");
 
 void settings() {
-  size(800, 600, P3D);
-  //fullScreen(P3D);
+  //size(800, 600, P3D);
+  fullScreen(P3D);
+  PJOGL.profile=1;
 }
 
 void setup()
 {
-  frameRate(24);
+  server = new SyphonServer(this, "Processing Syphon");
+  
+  frameRate(15);
   lights();
+  sphereDetail(2);
   
   cam = new PeasyCam(this, 1000);
   cam.setMinimumDistance(100);
@@ -98,7 +105,7 @@ void setup()
       public void successCallback(String channel, Object message) {
         System.out.println("SUBSCRIBE : " + channel + " : "
           + message.getClass() + " : " + message.toString());
-          printString(message.toString());
+          //printString(message.toString());
           parseString(message.toString());
       }
 
@@ -158,13 +165,13 @@ void parseString(String str)
   for (i = 0; i < lst_lngth; i++) {
     String[] reading = split(list[i], ':');
     int rdnglngth = reading.length;
-    println(rdnglngth);
+    //println(rdnglngth);
     
     if(rdnglngth < 2 || rdnglngth > 3){
       return;
     }
 
-    if(reading.length>3){
+    if(reading.length > 3){
       print("Weird shit happens... string to long");
     }
     
@@ -174,19 +181,19 @@ void parseString(String str)
       ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
     }
     
-    println("=============");
+    //println("=============");
   }
 }
 
 void draw()
 {
-  background(255);
+  background(0);
   
   cam.rotateY(radians(camRotateSpeed));
   
   if(autoCameraZoom){
     cam.setDistance(sin(a/100)*200 + 400);
-    a = a + inc;
+    a =+ inc;
   }
 
   // run the Realtime Particle System
@@ -210,11 +217,12 @@ void draw()
       drawAxis( 2 );
     cam.endHUD();
   }
+  
+  server.sendScreen();
 
 }
 
 void keyPressed() {
-  println("---");
   if (key == CODED) {
     
   } else if (key == 'o'){

@@ -40,7 +40,11 @@ class ParticleSystem{
     for(i = psize; i>=0; i--){
       Particle p = particles.get(i);
       p.run();
+      println("p.isDead(): ");
+      println(p.isDead());
       if(p.isDead()){
+        print("REMOVED: ");
+        println(i);
         particles.remove(i);
       }
     }
