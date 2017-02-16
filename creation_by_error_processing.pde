@@ -4,6 +4,13 @@ import com.pubnub.api.*;
 import processing.serial.*;
 import peasy.*;
 
+import ddf.minim.*;
+import ddf.minim.ugens.*;
+
+AudioOutput out;
+boolean audio = true;
+int audioDelay = 100;
+
 PeasyCam cam;
 ParticleSystem ps;
 SyphonServer server;
@@ -41,6 +48,9 @@ void setup()
   frameRate(15);
   lights();
   sphereDetail(2);
+  
+  Minim minim = new Minim( this );
+  out = minim.getLineOut();
   
   cam = new PeasyCam(this, 1000);
   cam.setMinimumDistance(100);
@@ -187,6 +197,13 @@ void parseString(String str)
     if(int(reading[2]) > 0){
       ps.origin.set(0, 0, systemIndex * systemIndexMultiplier);
       ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
+      
+      if(audio){
+        out.playNote( 0.0, 3.0, map(int(reading[1]), 0, 400, 80, 140));
+        out.playNote( 0.0, 3.0, map(int(reading[2]), 0, 400, 80, 140));
+        delay(audioDelay);
+      }
+      
     }
     
     //println("=============");
@@ -237,6 +254,8 @@ void keyPressed() {
     showOriginBox = !showOriginBox;
   } else if(key == 'd'){
     autoCameraZoom = !autoCameraZoom;
+  } else if(key == 'a'){
+    audio = !audio;
   }
 }
 
