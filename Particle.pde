@@ -16,6 +16,10 @@ class Particle {
     display();
   }
   
+  PVector getLocation(){
+    return location;
+  }
+  
   void update(){
     //velocity.add(acceleration);
     //location.add(velocity);
@@ -27,7 +31,15 @@ class Particle {
     stroke(255, lifespan);
     strokeWeight(2);
     fill(255,lifespan);
+    // playing with pshapes instead of spheres
+    //beginShape(POINTS);
+      //stroke(255,255,255);
+      //vertex(location.x, location.y, location.z);
+    //  sphere(1);
+    //endShape();
+    
     pushMatrix();
+      stroke(255,255,255);
       translate(location.x, location.y, location.z);
       sphere(1);
     popMatrix();

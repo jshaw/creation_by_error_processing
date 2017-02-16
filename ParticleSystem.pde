@@ -1,6 +1,7 @@
 class ParticleSystem{
   ArrayList<Particle> particles;
   PVector origin;
+  //PShape star;
   
   ParticleSystem(PVector location, int msi, int sim){
     origin = location.get();
@@ -36,17 +37,30 @@ class ParticleSystem{
   void run(){
     int i = 0;
     int psize = particles.size()-1;
+    // also testing pshapes vs. spheres for partlices
+    // =========
+    //star = createShape();
+    //star.beginShape();
+    //star.fill(102);
+    //star.stroke(255);
+    //star.strokeWeight(2);
     
-    for(i = psize; i>=0; i--){
-      Particle p = particles.get(i);
-      p.run();
-      println("p.isDead(): ");
-      println(p.isDead());
-      if(p.isDead()){
-        print("REMOVED: ");
-        println(i);
-        particles.remove(i);
+      for(i = psize; i>=0; i--){
+        Particle p = particles.get(i);
+        p.run();
+        if(p.isDead()){
+          particles.remove(i);
+        }
+        
+        //PVector location = p.getLocation();
+        //println(location);
+        //if(p.isDead()){
+        //  particles.remove(i);
+        //} else {
+        //  star.vertex(location.x, location.y, location.z);
+        //}
+        
       }
-    }
+    //star.endShape(CLOSE);
   }
 }
