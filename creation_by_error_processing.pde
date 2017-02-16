@@ -21,8 +21,9 @@ float a = 0.0;
 //float inc = TWO_PI/25.0;
 float inc = TWO_PI / 5;
 
+int get_history_num = 100;
+int maxSystemIndex = get_history_num;
 int systemIndex = 0;
-int maxSystemIndex = 50;
 int systemIndexMultiplier = 10;
 float camRotateSpeed = 0.5;
 Pubnub pubnub = new Pubnub("pub-c-70a0789e-af5a-4f4f-8c1b-8e6eb6db7bf2", "sub-c-6bac1e5a-e5c4-11e6-a504-02ee2ddab7fe");
@@ -52,7 +53,7 @@ void setup()
   axisOrgHud    = new PVector();
   
   //ps = new ParticleSystem(new PVector((maxSystemIndex * systemIndexMultiplier / 2) * -1, 50));
-  ps = new ParticleSystem(new PVector(width/2, 50), maxSystemIndex, systemIndexMultiplier);
+  ps = new ParticleSystem(new PVector(width/2, get_history_num), maxSystemIndex, systemIndexMultiplier);
   
   try {
     pubnub.subscribe("feather_creation_by_error", new Callback() {
@@ -116,22 +117,29 @@ void setup()
       }
     });
     
-    // Commented out to test Monday
-    //pubnub.subscribe("history_channel", new Callback() {});
+    // Get the last 50 scanns to pre-populate the screen on start up
+    Callback callback = new Callback() {
+      public void successCallback(String channel, Object response) {
+        
+        String r_string = response.toString();
+        String[] tmp = split(r_string, "[[");
+        String[] tmp_2 = split(tmp[1], "]");
+        String[] split_array = split(tmp_2[0], ",");
+        
+        int i;
+        int history_array_length = split_array.length;
+        for(i = 0; i < history_array_length; i++){
+          println(split_array[i]);
+          parseString(split_array[i].toString());
+        }
+        
+      }
+      public void errorCallback(String channel, PubnubError error) {
+        System.out.println(error.toString());
+      }
+    };
     
-    //Callback callback = new Callback() {
-    //  public void successCallback(String channel, Object response) {
-    //    System.out.println("In Setup");
-    //    System.out.println(response.toString());
-    //  }
-    //  public void errorCallback(String channel, PubnubError error) {
-    //    System.out.println(error.toString());
-    //  }
-    //};
-    
-    //pubnub.history("feather_creation_by_error", 100, false, callback);
-    //pubnub.history("thesis_test", 100, false, callback);
-    
+    pubnub.history("feather_creation_by_error", get_history_num, false, callback);
   
   } 
   catch (PubnubException e) {
@@ -211,7 +219,7 @@ void draw()
   
   if(showOriginBox){
     box(10,10,10);
-    calculateAxis(50);
+    calculateAxis(get_history_num);
     
     cam.beginHUD();
       drawAxis( 2 );
