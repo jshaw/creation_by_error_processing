@@ -9,7 +9,9 @@ import ddf.minim.ugens.*;
 
 AudioOutput out;
 boolean audio = true;
-int audioDelay = 100;
+int audioDelay = 50;
+
+boolean load_history = false;
 
 PeasyCam cam;
 ParticleSystem ps;
@@ -36,8 +38,8 @@ float camRotateSpeed = 0.5;
 Pubnub pubnub = new Pubnub("pub-c-70a0789e-af5a-4f4f-8c1b-8e6eb6db7bf2", "sub-c-6bac1e5a-e5c4-11e6-a504-02ee2ddab7fe");
 
 void settings() {
-  //size(800, 600, P3D);
-  fullScreen(P3D);
+  size(800, 600, P3D);
+  //fullScreen(P3D);
   PJOGL.profile=1;
 }
 
@@ -51,6 +53,8 @@ void setup()
   
   Minim minim = new Minim( this );
   out = minim.getLineOut();
+  
+  out.setTempo( 80 );
   
   cam = new PeasyCam(this, 1000);
   cam.setMinimumDistance(100);
@@ -149,7 +153,9 @@ void setup()
       }
     };
     
-    pubnub.history("feather_creation_by_error", get_history_num, false, callback);
+    if(load_history){
+      pubnub.history("feather_creation_by_error", get_history_num, false, callback);
+    }
   
   } 
   catch (PubnubException e) {
@@ -180,12 +186,22 @@ void parseString(String str)
   String[] list = split(str, '/');
   int i;
   int lst_lngth = list.length;
-  for (i = 0; i < lst_lngth; i++) {
+  
+  int r_1 = 0;
+  int r_2 = 0;
+  
+  for (i = 0; i < lst_lngth - 1; i++) {
     String[] reading = split(list[i], ':');
     int rdnglngth = reading.length;
     //println(rdnglngth);
     
     if(rdnglngth < 2 || rdnglngth > 3){
+      if(audio){
+        println("r_1: ");
+        println(r_1);
+        out.playNote( 0.0, 5.0, map(r_1, 0, 15000, 70, 250));
+        out.playNote( 2.5, 5.0, map(r_2, 0, 15000, 70, 250));
+      }
       return;
     }
 
@@ -199,15 +215,25 @@ void parseString(String str)
       ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
       
       if(audio){
-        out.playNote( 0.0, 3.0, map(int(reading[1]), 0, 400, 80, 140));
-        out.playNote( 0.0, 3.0, map(int(reading[2]), 0, 400, 80, 140));
-        delay(audioDelay);
+        r_1 += int(reading[1]);
+        r_2 += int(reading[2]);
+        
+        //out.playNote( 0.0, 3.0, map(int(reading[1]), 0, 400, 80, 140));
+        //out.playNote( 0.0, 3.0, map(int(reading[2]), 0, 400, 80, 140));
       }
-      
     }
     
     //println("=============");
   }
+  
+  //print("--???????????");
+  //if(audio){
+  //  println("=============");
+  //  //out.pauseNotes();
+  //    out.playNote( 0.0, 3.0, map(r_1, 0, 20000, 80, 140));
+  //    out.playNote( 0.0, 3.0, map(r_2, 0, 20000, 80, 140));
+  //  //out.resumeNotes();
+  //}
 }
 
 void draw()
