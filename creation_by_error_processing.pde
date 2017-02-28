@@ -8,10 +8,16 @@ import ddf.minim.*;
 import ddf.minim.ugens.*;
 
 AudioOutput out;
-boolean audio = true;
+boolean audio = false;
 int audioDelay = 50;
 
 boolean load_history = false;
+
+// true = arraylist
+// false = array
+boolean arraylist_or_array = false;
+int array_size = 50;
+int cols, rows;
 
 PeasyCam cam;
 ParticleSystem ps;
@@ -66,8 +72,22 @@ void setup()
   axisZHud      = new PVector();
   axisOrgHud    = new PVector();
   
-  //ps = new ParticleSystem(new PVector((maxSystemIndex * systemIndexMultiplier / 2) * -1, 50));
-  ps = new ParticleSystem(new PVector(width/2, get_history_num), maxSystemIndex, systemIndexMultiplier);
+  // true = arraylist
+  // false = array
+  if(arraylist_or_array == true){
+    //ps = new ParticleSystem(new PVector((maxSystemIndex * systemIndexMultiplier / 2) * -1, 50));
+    ps = new ParticleSystem(new PVector(width/2, get_history_num), maxSystemIndex, systemIndexMultiplier);
+  } else {
+    // cols = maxSystemIndex;
+    // rows = array_size;
+
+    cols = maxSystemIndex;
+    rows = array_size;
+
+    //array_points = new int[cols][rows];
+    ps = new ParticleSystem(new PVector(width/2, get_history_num), maxSystemIndex, systemIndexMultiplier);
+    ps.setArrayVars(cols, rows);
+  }
   
   try {
     pubnub.subscribe("feather_creation_by_error", new Callback() {
@@ -120,7 +140,7 @@ void setup()
       public void successCallback(String channel, Object message) {
         System.out.println("SUBSCRIBE : " + channel + " : "
           + message.getClass() + " : " + message.toString());
-          //printString(message.toString());
+          printString(message.toString());
           parseString(message.toString());
       }
 
@@ -197,8 +217,8 @@ void parseString(String str)
     
     if(rdnglngth < 2 || rdnglngth > 3){
       if(audio){
-        println("r_1: ");
-        println(r_1);
+        // println("r_1: ");
+        // println(r_1);
         out.playNote( 0.0, 5.0, map(r_1, 0, 15000, 70, 250));
         out.playNote( 2.5, 5.0, map(r_2, 0, 15000, 70, 250));
       }
@@ -212,7 +232,13 @@ void parseString(String str)
     // only bring values greater then 0
     if(int(reading[2]) > 0){
       ps.origin.set(0, 0, systemIndex * systemIndexMultiplier);
-      ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
+
+      if(arraylist_or_array == true){
+        ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
+      } else {
+        ps.update_particle((int)systemIndex, (int)i, int(reading[0]), int(reading[1]), int(reading[2]));
+
+      }
       
       if(audio){
         r_1 += int(reading[1]);
@@ -239,16 +265,23 @@ void parseString(String str)
 void draw()
 {
   background(0);
+  //noLoop();
   
+  rotateY(PI/2.0);
   cam.rotateY(radians(camRotateSpeed));
   
   if(autoCameraZoom){
     cam.setDistance(sin(a/100)*200 + 400);
     a =+ inc;
   }
-
-  // run the Realtime Particle System
-  ps.run();
+  
+  if(arraylist_or_array == true){
+    // run the Realtime Particle System
+    ps.run();
+  } else {
+    // setSystemIndex();
+    ps.run_array();
+  }
 
   //Callback callback = new Callback() {
   //  public void successCallback(String channel, Object response) {
