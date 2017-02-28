@@ -4,6 +4,7 @@ class Particle {
   PVector acceleration;
   float lifespan;
   boolean transparent;
+  boolean particleFade;
   
   Particle(PVector l){
     //acceleration = new PVector(0,0.05);
@@ -11,6 +12,7 @@ class Particle {
     location = l.get();
     lifespan = 250.0;
     transparent = true;
+    particleFade = false;
   }
   
   void run(){
@@ -31,9 +33,16 @@ class Particle {
   
   void display(){
     if(transparent == false){
-      stroke(255, lifespan);
+      //stroke(255, lifespan);
       strokeWeight(2);
-      fill(255, lifespan);
+      if(particleFade == true){
+        fill(255, lifespan);
+        stroke(255, lifespan);
+      } else {
+        fill(255, 255, 255);
+        stroke(255, 255, 255);
+      }
+      
     } else {
       noStroke();
       noFill();
@@ -46,11 +55,15 @@ class Particle {
     //endShape();
     
     pushMatrix();
-    if(transparent == false){
-      stroke(255, lifespan);
-    } else {
-      noStroke();
-    }
+    //if(transparent == false){
+    //  if(particleFade == true){
+    //    stroke(255, lifespan);
+    //  } else {
+    //    stroke(255, 255, 255);
+    //  }
+    //} else {
+    //  noStroke();
+    //}
       // println("location: ");
       // println(location);
       translate(location.x, location.y, location.z);
@@ -74,5 +87,14 @@ class Particle {
       return false;
     }
   }
+  
+  void updateParticleFade(boolean pf){
+    particleFade = pf;
+  }
+  
+  // this is a todo
+  //void updateLifespan(){
+  //  lifespan = 250.0;
+  //}
 
 }

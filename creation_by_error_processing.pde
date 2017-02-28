@@ -36,8 +36,8 @@ boolean showOriginBox = true;
 boolean autoCameraZoom = true;
 
 float a = 0.0;
-//float inc = TWO_PI/25.0;
-float inc = TWO_PI / 5;
+long lastCamUpdate = 0;
+long updateCamInterval = 25;
 
 int get_history_num = 100;
 int maxSystemIndex = get_history_num;
@@ -55,6 +55,8 @@ int d = day();    // Values from 1 - 31
 int m = month();  // Values from 1 - 12
 int y = year();   // 2003, 2004, 2005, etc.
 
+boolean particleFade = false;
+
 void settings() {
   //size(800, 600, P3D);
   fullScreen(P3D);
@@ -65,7 +67,7 @@ void setup()
 {
   server = new SyphonServer(this, "Processing Syphon");
   
-  frameRate(15);
+  frameRate(20);
   lights();
   sphereDetail(2);
   
@@ -287,12 +289,18 @@ void draw()
   background(0);
   //noLoop();
   
-  rotateY(PI/2.0);
+  //rotateY(PI/2.0);
   cam.rotateY(radians(camRotateSpeed));
   
   if(autoCameraZoom){
-    cam.setDistance(sin(a/100)*200 + 400);
-    a =+ inc;
+    if((millis() - lastCamUpdate) > updateCamInterval){
+      lastCamUpdate = millis();
+      a += 0.005;
+      double d2 = 10 + (sin(a + PI/2) * 1500/2) + 1500/2;
+      cam.setDistance((double)d2);
+      //println("cam.getDistance(): " + cam.getDistance());
+    }
+
   }
   
   if(arraylist_or_array == true){
@@ -302,6 +310,9 @@ void draw()
     // setSystemIndex();
     ps.run_array();
   }
+  
+  // this is still a todo
+  //ps.updateParticleFade(particleFade);
 
   //Callback callback = new Callback() {
   //  public void successCallback(String channel, Object response) {
@@ -356,6 +367,8 @@ void keyPressed() {
     audio = !audio;
   } else if(key == 'l'){
     logDataStream = !logDataStream;
+  } else if(key == 'f'){
+    particleFade = !particleFade;
   }
   
 }

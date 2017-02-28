@@ -7,6 +7,7 @@ class ParticleSystem{
 
   int cols;
   int rows;
+  boolean particleFade = false;
   
   ParticleSystem(PVector location, int msi, int sim){
     origin = location.get();
@@ -161,8 +162,21 @@ class ParticleSystem{
         // new data stream is read
         // p.updateVector((int)random(0, 180), (int)random(5, 400));
         p.run();
+        p.updateParticleFade(particleFade);
       }
     }
   }
+  
+  // this is the todo, also 
+  // if particle fade is implemented, it will need to have a way to reset the particle whenever it 
+  // has a transparency that is very low
+  void updateParticleFade(boolean pf){ 
+    particleFade = pf;
+  }
+  
+  // this is a todo
+  //void updateLifespan(){ 
+  //  p.particleFade();
+  //}
   
 }
