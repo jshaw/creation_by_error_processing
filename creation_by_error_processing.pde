@@ -13,6 +13,9 @@ int audioDelay = 50;
 
 boolean load_history = false;
 
+boolean logDataStream = false;
+String debug_string = "";
+
 // true = arraylist
 // false = array
 boolean arraylist_or_array = false;
@@ -43,9 +46,18 @@ int systemIndexMultiplier = 10;
 float camRotateSpeed = 0.5;
 Pubnub pubnub = new Pubnub("pub-c-70a0789e-af5a-4f4f-8c1b-8e6eb6db7bf2", "sub-c-6bac1e5a-e5c4-11e6-a504-02ee2ddab7fe");
 
+long lastUpdate = 0;
+long updateInterval = 60000;
+//long updateInterval = 10000;
+
+// For saving files
+int d = day();    // Values from 1 - 31
+int m = month();  // Values from 1 - 12
+int y = year();   // 2003, 2004, 2005, etc.
+
 void settings() {
-  size(800, 600, P3D);
-  //fullScreen(P3D);
+  //size(800, 600, P3D);
+  fullScreen(P3D);
   PJOGL.profile=1;
 }
 
@@ -201,7 +213,15 @@ void setSystemIndex(){
 void parseString(String str)
 {
   
+  if(str.length() < 15){
+    return;
+  }
+  
   setSystemIndex();
+  
+  if(logDataStream){
+    debug_string = str;
+  }
   
   String[] list = split(str, '/');
   int i;
@@ -302,8 +322,27 @@ void draw()
     cam.endHUD();
   }
   
+  
+  if(logDataStream){
+    cam.beginHUD();
+      fill(255, 255, 255);
+      textSize(20);
+      text(debug_string, 10, 30);
+    cam.endHUD();
+  }
   server.sendScreen();
-
+  
+  
+  if((millis() - lastUpdate) > updateInterval){
+    lastUpdate = millis();
+    int s = second();
+    int m = minute();
+    int h = hour();
+    String tmp_time_stamp = d + "_" + m + "_" + y + "__" + h + "_" + m + "_" + s;
+    String filename = "./../data/creation_by_error_" + tmp_time_stamp + ".png";
+    saveFrame(filename);
+  }
+  
 }
 
 void keyPressed() {
@@ -315,7 +354,10 @@ void keyPressed() {
     autoCameraZoom = !autoCameraZoom;
   } else if(key == 'a'){
     audio = !audio;
+  } else if(key == 'l'){
+    logDataStream = !logDataStream;
   }
+  
 }
 
 // ------------------------------------------------------------------------ //
