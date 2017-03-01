@@ -287,16 +287,15 @@ void parseString(String str)
 void draw()
 {
   background(0);
-  //noLoop();
+  toggleCursor();
   
-  //rotateY(PI/2.0);
   cam.rotateY(radians(camRotateSpeed));
   
   if(autoCameraZoom){
     if((millis() - lastCamUpdate) > updateCamInterval){
       lastCamUpdate = millis();
       a += 0.005;
-      double d2 = 10 + (sin(a + PI/2) * 1500/2) + 1500/2;
+      double d2 = 100 + (sin(a + PI/2) * 1500/2) + 1500/2;
       cam.setDistance((double)d2);
       //println("cam.getDistance(): " + cam.getDistance());
     }
@@ -354,6 +353,20 @@ void draw()
     saveFrame(filename);
   }
   
+}
+
+boolean cursorState = true;
+
+void toggleCursor(){
+  if (mousePressed == true) {
+    cursorState = !cursorState;
+    if(cursorState){
+      cursor(HAND);
+    } else {
+      noCursor();
+    }
+    
+  }
 }
 
 void keyPressed() {
