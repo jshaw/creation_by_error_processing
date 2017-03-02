@@ -162,7 +162,7 @@ class ParticleSystem{
         // new data stream is read
         // p.updateVector((int)random(0, 180), (int)random(5, 400));
         p.run();
-        p.updateParticleFade(particleFade);
+        p.setParticleFade(particleFade);
       }
     }
   }
@@ -170,13 +170,23 @@ class ParticleSystem{
   // this is the todo, also 
   // if particle fade is implemented, it will need to have a way to reset the particle whenever it 
   // has a transparency that is very low
-  void updateParticleFade(boolean pf){ 
+  void setParticleFade(boolean pf){
     particleFade = pf;
   }
-  
-  // this is a todo
-  //void updateLifespan(){ 
-  //  p.particleFade();
-  //}
+   
+  void updateParticleFade(int columnIndex){
+    if(particleFade == true){
+      int x;
+      //println("columnIndex" + columnIndex);
+      //println("array_points" + array_points.length);
+      //int tmp_length = array_points[columnIndex].length;
+      //println(tmp_length);
+      for(x = 0; x < rows; x++){
+        Particle p = array_points[columnIndex-1][x];
+        //println("index:" + p);
+        p.updateParticleAlpha();
+      }
+    }
+  }
   
 }

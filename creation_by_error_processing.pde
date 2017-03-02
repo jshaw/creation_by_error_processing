@@ -55,7 +55,7 @@ int d = day();    // Values from 1 - 31
 int m = month();  // Values from 1 - 12
 int y = year();   // 2003, 2004, 2005, etc.
 
-boolean particleFade = false;
+boolean particleFade = true;
 
 void settings() {
   //size(800, 600, P3D);
@@ -154,7 +154,7 @@ void setup()
       public void successCallback(String channel, Object message) {
         System.out.println("SUBSCRIBE : " + channel + " : "
           + message.getClass() + " : " + message.toString());
-          printString(message.toString());
+          //printString(message.toString());
           parseString(message.toString());
       }
 
@@ -208,8 +208,9 @@ void setSystemIndex(){
   if(systemIndex < maxSystemIndex){
     systemIndex++;
   } else {
-    systemIndex = 0;
+    systemIndex = 1;
   }
+  println("systemIndex: " + systemIndex);
 }
 
 void parseString(String str)
@@ -220,6 +221,7 @@ void parseString(String str)
   }
   
   setSystemIndex();
+  ps.setParticleFade(particleFade);
   
   if(logDataStream){
     debug_string = str;
@@ -259,7 +261,10 @@ void parseString(String str)
         ps.addParticle(int(reading[0]), int(reading[1]), int(reading[2]));
       } else {
         ps.update_particle((int)systemIndex, (int)i, int(reading[0]), int(reading[1]), int(reading[2]));
-
+        
+        if(particleFade == true){
+          ps.updateParticleFade(systemIndex);
+        }
       }
       
       if(audio){

@@ -27,13 +27,13 @@ class Particle {
   void update(){
     //velocity.add(acceleration);
     //location.add(velocity);
-    //lifespan -= 2.0;
-    lifespan -= 0.05;
+    //lifespan -= 1.0;
+    //lifespan -= 0.05;
+    lifespan -= 0.04;
   }
   
   void display(){
     if(transparent == false){
-      //stroke(255, lifespan);
       strokeWeight(2);
       if(particleFade == true){
         fill(255, lifespan);
@@ -88,13 +88,12 @@ class Particle {
     }
   }
   
-  void updateParticleFade(boolean pf){
+  void updateParticleAlpha(){
+    lifespan = 255.0;
+  }
+  
+  void setParticleFade(boolean pf){
     particleFade = pf;
   }
   
-  // this is a todo
-  //void updateLifespan(){
-  //  lifespan = 250.0;
-  //}
-
 }
